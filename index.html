@@ -11,8 +11,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<script>/* 허브 코드를 넣은 적 없는 기기는 화면을 가린 채 시작합니다 */
-try{ if(!localStorage.getItem('hub-roster-key')) document.documentElement.classList.add('locked'); }catch(e){ document.documentElement.classList.add('locked'); }</script>
+<script>/* 접속 코드를 넣지 않은 창은 화면을 가린 채 시작합니다 */
+try{ if(!localStorage.getItem('hub-roster-key') && !sessionStorage.getItem('hub-roster-key')) document.documentElement.classList.add('locked'); }catch(e){ document.documentElement.classList.add('locked'); }</script>
 <style>
   :root{
     --ink:#202226; --ink-2:#3A3D42; --gray:#686C72; --faint:#9A9EA4;
@@ -242,14 +242,17 @@ try{ if(!localStorage.getItem('hub-roster-key')) document.documentElement.classL
   .hg h1{font-size:27px;font-weight:800;letter-spacing:-.03em;margin-top:20px}
   .hg h1 em{font-style:normal;color:var(--yel);font-weight:900}
   .hg p{color:var(--band-soft);font-size:14.5px;margin-top:8px}
-  .hg form{display:flex;gap:8px;margin-top:26px}
-  .hg input{flex:1;min-width:0;height:52px;border:1px solid #3B3E44;border-radius:12px;background:var(--band-2);padding:0 16px;font:inherit;font-size:16px;color:var(--band-tx)}
-  .hg input::placeholder{color:#8C9096}
-  .hg input:focus{outline:none;border-color:var(--yel);background:#33363C}
+  .hg form{margin-top:26px}
+  .hg .hg-row{display:flex;gap:8px}
+  .hg .keep{display:inline-flex;align-items:center;gap:9px;margin-top:14px;font-size:15px;font-weight:600;color:var(--band-tx);cursor:pointer;user-select:none}
+  .hg .keep input{flex:none;width:20px;height:20px;padding:0;border-radius:6px;accent-color:var(--yel);cursor:pointer}
+  .hg .hg-row input{flex:1;min-width:0;height:52px;border:1px solid #3B3E44;border-radius:12px;background:var(--band-2);padding:0 16px;font:inherit;font-size:16px;color:var(--band-tx)}
+  .hg .hg-row input::placeholder{color:#8C9096}
+  .hg .hg-row input:focus{outline:none;border-color:var(--yel);background:#33363C}
   .hg button{flex:none;height:52px;padding:0 24px;border-radius:12px;background:var(--yel);color:var(--ink);font-size:16px;font-weight:800}
   .hg button:disabled{opacity:.6;cursor:default}
   .hg .msg{min-height:22px;margin-top:12px;color:#FFB4A4;font-size:14px;font-weight:600}
-  .hg .note{font-size:13px;color:#7C8086;margin-top:18px}
+  .hg .note{font-size:13px;color:#7C8086;margin-top:14px;line-height:1.7}
   footer button{font-weight:700;color:var(--ink-2);text-decoration:underline;text-underline-offset:3px}
 
   /* ── 참가자 검색 (어느 탭에서나 여는 오른쪽 서랍) ── */
@@ -370,13 +373,16 @@ try{ if(!localStorage.getItem('hub-roster-key')) document.documentElement.classL
   <div class="hg">
     <div class="mark" aria-hidden="true"><b>K</b><span><i></i><i></i><i></i><i></i></span></div>
     <h1>K예술영재 프로젝트 운영 <em>Hub</em></h1>
-    <p>운영진 코드를 넣어 주세요.<br>이 기기에서는 처음 한 번만 넣으면 됩니다.</p>
+    <p>운영진 접속 코드를 넣어 주세요.</p>
     <form id="hg-form" autocomplete="off">
-      <input id="hg-code" type="password" placeholder="허브 코드" aria-label="허브 코드" autocomplete="off">
-      <button type="submit" id="hg-go">들어가기</button>
+      <div class="hg-row">
+        <input id="hg-code" type="password" placeholder="접속 코드" aria-label="접속 코드" autocomplete="off">
+        <button type="submit" id="hg-go">들어가기</button>
+      </div>
+      <label class="keep"><input type="checkbox" id="hg-keep"><span>자동 로그인</span></label>
     </form>
     <p class="msg" id="hg-msg" role="alert"></p>
-    <p class="note">코드는 이 브라우저에만 저장됩니다.</p>
+    <p class="note">자동 로그인을 켜면 이 기기에서는 다음부터 코드를 묻지 않습니다.<br>끄면 창을 닫을 때까지만 유지됩니다. 함께 쓰는 PC에서는 꺼 두세요.</p>
   </div>
 </main>
 
@@ -411,7 +417,7 @@ try{ if(!localStorage.getItem('hub-roster-key')) document.documentElement.classL
   <main id="panels"></main>
   <footer>
     <span>워크숍·평가회의 자료는 「K예술영재 프로젝트 워크샵 아카이브」 시트의 <b>2026년 11월 4일</b> 내용입니다.</span>
-    <span>관리자·아카이빙 주소가 담겨 있으니 운영진 안에서만 공유해 주세요. <button type="button" data-hub-lock>이 기기에서 잠그기</button></span>
+    <span>관리자·아카이빙 주소가 담겨 있으니 운영진 안에서만 공유해 주세요. <button type="button" data-hub-lock>로그아웃</button></span>
   </footer>
 </div>
 
@@ -428,7 +434,7 @@ try{ if(!localStorage.getItem('hub-roster-key')) document.documentElement.classL
         <div class="rs-meta" id="rs-count"></div>
         <div class="rs-list" id="rs-list"></div>
         <div class="empty hide" id="rs-none"><b>찾는 학생이 없습니다</b>검색어나 분야·과정 선택을 바꿔 보세요.</div>
-        <p class="rs-foot"><span>허브 코드를 넣은 기기에서만 열립니다.</span><button type="button" data-hub-lock>이 기기에서 잠그기</button></p>
+        <p class="rs-foot"><span>접속 코드를 넣은 기기에서만 열립니다.</span><button type="button" data-hub-lock>로그아웃</button></p>
       </div>
       <div class="hide" id="rs-det"></div>
     </div>
@@ -948,8 +954,11 @@ $r('rs-gate').innerHTML = `
   <p class="gate-note${ROSTER_API ? ' hide' : ''}">명단 시트의 웹 앱 주소를 이 파일의 ROSTER_API에 넣으면 열립니다.</p>`;
 
 const rsStore = {
-  get key(){ try{ return localStorage.getItem('hub-roster-key') || ''; }catch(e){ return ''; } },
-  set key(v){ try{ v ? localStorage.setItem('hub-roster-key', v) : localStorage.removeItem('hub-roster-key'); }catch(e){} },
+  get key(){ try{ return localStorage.getItem('hub-roster-key') || sessionStorage.getItem('hub-roster-key') || ''; }catch(e){ return ''; } },
+  put(v, keep){   // keep = 자동 로그인: 이 기기에 저장 / 아니면 이 창을 닫을 때까지만
+    try{ localStorage.removeItem('hub-roster-key'); sessionStorage.removeItem('hub-roster-key');
+      if(v) (keep ? localStorage : sessionStorage).setItem('hub-roster-key', v); }catch(e){}
+  },
   load(){ try{ RS.token = sessionStorage.getItem('hub-roster') || ''; }catch(e){} },
   save(){ try{ RS.token ? sessionStorage.setItem('hub-roster', RS.token) : sessionStorage.removeItem('hub-roster'); }catch(e){} },
 };
@@ -978,10 +987,10 @@ async function rsCall(action, body){
     return rsPost(action, body);
   }
 }
-async function rsLogin(code){
+async function rsLogin(code, keep){   // keep을 주지 않으면(조용한 재확인) 저장 위치를 그대로 둡니다
   RS.token = '';
-  try{ await rsPost('login', { name:'운영진', code }); rsStore.key = code; }
-  catch(err){ if(err.code === 'BAD_CODE') rsStore.key = ''; throw err; }
+  try{ await rsPost('login', { name:'운영진', code }); if(keep !== undefined) rsStore.put(code, keep); }
+  catch(err){ if(err.code === 'BAD_CODE') rsStore.put(''); throw err; }
 }
 function rsView(v){   // gate | load | app | det
   ['gate','load','app','det'].forEach(k => $r('rs-' + k).classList.toggle('hide', k !== v));
@@ -1009,7 +1018,7 @@ async function rsLoad(){
   rsView('load'); $r('rs-dw').focus();
   let d;
   try{ d = await rsCall('list'); }
-  catch(err){ if(err.code === 'BAD_CODE' || !rsStore.key) hubLock('허브 코드가 바뀌었습니다. 새 코드를 넣어 주세요.'); else rsGate(err.message); return; }
+  catch(err){ if(err.code === 'BAD_CODE' || !rsStore.key) hubLock('접속 코드가 바뀌었습니다. 새 코드를 넣어 주세요.'); else rsGate(err.message); return; }
   RS.list = d.rows.map(r => { const o = Object.fromEntries(d.cols.map((c,i) => [c, r[i]])); o._s = norm([o['성명'], o['학교명'], o['전공'], o['분야'], o['지역'], gradeTx(o)].join(' ')); o._c = cho(o['성명'] || ''); return o; });
   SEG.rsf = 'all'; SEG.rsc = 'all';
   const cnt = fn => RS.list.filter(fn).length;
@@ -1074,7 +1083,7 @@ async function rsDetail(id){
     $r('rs-det').innerHTML = h;
   }catch(err){
     if(RS.det !== s) return;
-    if(err.code === 'BAD_CODE' || !rsStore.key){ hubLock('허브 코드가 바뀌었습니다. 새 코드를 넣어 주세요.'); return; }
+    if(err.code === 'BAD_CODE' || !rsStore.key){ hubLock('접속 코드가 바뀌었습니다. 새 코드를 넣어 주세요.'); return; }
     $r('rs-det').innerHTML = `<div class="empty"><b>정보를 불러오지 못했습니다</b>${esc(err.message)}</div>`;
   }
 }
@@ -1090,28 +1099,28 @@ $r('rs-gate').addEventListener('submit', e => { e.preventDefault(); if(ROSTER_AP
 /* ── 허브 들어오는 문: 코드는 명단 관문이 확인하고, 맞으면 이 브라우저에 저장해 다음부터는 묻지 않습니다 ── */
 const HTML = document.documentElement;
 function hubLock(msg){
-  rsStore.key = ''; RS.token = ''; rsStore.save(); RS.list = []; $r('rs-list').innerHTML = ''; $r('rs-q').value = '';
+  rsStore.put(''); RS.token = ''; rsStore.save(); RS.list = []; $r('rs-list').innerHTML = ''; $r('rs-q').value = '';
   rsHide(); try{ lockVault(); }catch(e){}
   HTML.classList.add('locked'); $r('hg-msg').textContent = msg || ''; $r('hg-code').value = ''; $r('hg-code').focus(); window.scrollTo(0, 0);
 }
 $r('hg-form').addEventListener('submit', async e => {
   e.preventDefault();
   const code = $r('hg-code').value.trim(), msg = $r('hg-msg'), go = $r('hg-go');
-  if(!code){ msg.textContent = '허브 코드를 넣어 주세요.'; $r('hg-code').focus(); return; }
+  if(!code){ msg.textContent = '접속 코드를 넣어 주세요.'; $r('hg-code').focus(); return; }
   msg.textContent = '확인하는 중…'; go.disabled = true;
   try{
-    await rsLogin(code);
+    await rsLogin(code, $r('hg-keep').checked);
     msg.textContent = ''; $r('hg-code').value = ''; HTML.classList.remove('locked');
     show(location.hash.slice(1) || 'sites', false);
-  }catch(err){ msg.textContent = err.code === 'BAD_CODE' ? '허브 코드가 맞지 않습니다.' : err.message; $r('hg-code').select(); }
+  }catch(err){ msg.textContent = err.code === 'BAD_CODE' ? '접속 코드가 맞지 않습니다.' : err.message; $r('hg-code').select(); }
   go.disabled = false;
 });
-document.addEventListener('click', e => { if(e.target.closest('[data-hub-lock]')) hubLock('이 기기에서 잠갔습니다. 다시 들어오려면 허브 코드가 필요합니다.'); });
+document.addEventListener('click', e => { if(e.target.closest('[data-hub-lock]')) hubLock('로그아웃했습니다.'); });
 if(!ROSTER_API) HTML.classList.remove('locked');          // 관문이 없으면 문을 세우지 않습니다
 else if(!rsStore.key) hubLock('');
 else {                                                       // 저장된 코드가 아직 맞는지 창을 열 때 한 번 조용히 확인
   rsStore.load();
-  if(!RS.token) rsLogin(rsStore.key).catch(err => { if(err.code === 'BAD_CODE') hubLock('허브 코드가 바뀌었습니다. 새 코드를 넣어 주세요.'); });
+  if(!RS.token) rsLogin(rsStore.key).catch(err => { if(err.code === 'BAD_CODE') hubLock('접속 코드가 바뀌었습니다. 새 코드를 넣어 주세요.'); });
 }
 $r('rs-q').addEventListener('input', rsRender);
 document.addEventListener('click', e => {
