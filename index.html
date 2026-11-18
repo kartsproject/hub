@@ -1001,7 +1001,7 @@ document.addEventListener('click', e => {
 
 /* ── 참가자 검색: 어느 탭에서나 오른쪽 서랍으로 엽니다 ──
    열람 코드는 기기마다 처음 한 번만 넣으면 이 브라우저가 기억해 다시 묻지 않습니다. 목록 → 학생을 누르면 상세를 받아 옵니다. */
-const RS = { token:'', list:[], open:false, det:null, top:0 };
+const RS = { token:'', list:[], sig:'', loading:null, open:false, det:null, dcache:new Map() };
 const $r = id => document.getElementById(id);
 const FKEY = Object.fromEntries(FIELDS.map(f => [f.name, f.key]));
 const CHO = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
@@ -1025,6 +1025,9 @@ const rsStore = {
     try{ localStorage.removeItem('hub-roster-key'); sessionStorage.removeItem('hub-roster-key');
       if(v) (keep ? localStorage : sessionStorage).setItem('hub-roster-key', v); }catch(e){}
   },
+  get box(){ try{ return localStorage.getItem('hub-roster-key') ? localStorage : sessionStorage; }catch(e){ return null; } },
+  get list(){ try{ return JSON.parse(this.box.getItem('hub-roster-list') || 'null'); }catch(e){ return null; } },
+  set list(v){ try{ localStorage.removeItem('hub-roster-list'); sessionStorage.removeItem('hub-roster-list'); if(v) this.box.setItem('hub-roster-list', JSON.stringify(v)); }catch(e){} },
   load(){ try{ RS.token = sessionStorage.getItem('hub-roster') || ''; }catch(e){} },
   save(){ try{ RS.token ? sessionStorage.setItem('hub-roster', RS.token) : sessionStorage.removeItem('hub-roster'); }catch(e){} },
 };
@@ -1068,30 +1071,44 @@ async function rsShow(){
   if(RS.open) return;
   RS.open = true; RS.back = document.activeElement;
   $r('rs-ov').classList.remove('hide'); $r('rs-fab').classList.add('hide'); document.body.style.overflow = 'hidden';
-  if(RS.list.length){ rsView('app'); $r('rs-q').focus(); $r('rs-q').select(); return; }
-  rsStore.load();
   if(!ROSTER_API){ rsGate(''); return; }
-  await rsLoad();
+  if(!RS.list.length){ rsView('load'); $r('rs-dw').focus(); await rsWarm(); }
+  if(!RS.open) return;
+  if(RS.list.length){ rsView('app'); $r('rs-q').focus(); $r('rs-q').select(); }
 }
 function rsGate(msg){ rsView('gate'); $r('rs-msg').textContent = msg || ''; $r('rs-dw').focus(); }
-async function rsLoad(){
-  rsView('load'); $r('rs-dw').focus();
-  let d;
-  try{ d = await rsCall('list'); }
-  catch(err){ if(err.code === 'BAD_CODE' || !rsStore.key) hubLock('접속 코드가 바뀌었습니다. 새 코드를 넣어 주세요.'); else rsGate(err.message); return; }
+/* 목록 채우기 — d = { cols, rows }. 내용이 그대로면 다시 그리지 않습니다 */
+function rsFill(d){
+  const sig = JSON.stringify(d.rows);
+  if(sig === RS.sig) return;
+  const first = !RS.list.length;
+  RS.sig = sig;
   RS.list = d.rows.map(r => { const o = Object.fromEntries(d.cols.map((c,i) => [c, r[i]])); o._s = norm([o['성명'], o['학교명'], o['전공'], o['분야'], o['지역'], gradeTx(o)].join(' ')); o._c = cho(o['성명'] || ''); return o; });
-  SEG.rsf = 'all'; SEG.rsc = 'all';
-  const cnt = fn => RS.list.filter(fn).length;
+  const cnt = fn => RS.list.filter(fn).length, on = (seg, k) => SEG[seg] === k;
+  if(first){ SEG.rsf = 'all'; SEG.rsc = 'all'; }
   $r('rs-segs').innerHTML = `<div class="seg" data-seg="rsf" role="group" aria-label="분야 고르기">
-      <button type="button" data-k="all" aria-pressed="true">전체<span class="c">${RS.list.length}</span></button>
-      ${FIELDS.map(f => `<button type="button" data-k="${f.key}" aria-pressed="false">${dot(f.key)}${esc(f.name)}<span class="c">${cnt(s => s['분야'] === f.name)}</span></button>`).join('')}</div>
+      <button type="button" data-k="all" aria-pressed="${on('rsf','all')}">전체<span class="c">${RS.list.length}</span></button>
+      ${FIELDS.map(f => `<button type="button" data-k="${f.key}" aria-pressed="${on('rsf',f.key)}">${dot(f.key)}${esc(f.name)}<span class="c">${cnt(s => s['분야'] === f.name)}</span></button>`).join('')}</div>
     <div class="seg" data-seg="rsc" role="group" aria-label="과정 고르기">
-      <button type="button" data-k="all" aria-pressed="true">모든 과정</button>
-      <button type="button" data-k="ws" aria-pressed="false">워크숍<span class="c">${cnt(RSC.ws)}</span></button>
-      <button type="button" data-k="sel" aria-pressed="false">심화 선정<span class="c">${cnt(RSC.sel)}</span></button>
-      <button type="button" data-k="adv" aria-pressed="false">멘토링·캠프 참여<span class="c">${cnt(RSC.adv)}</span></button></div>`;
+      <button type="button" data-k="all" aria-pressed="${on('rsc','all')}">모든 과정</button>
+      <button type="button" data-k="ws" aria-pressed="${on('rsc','ws')}">워크숍<span class="c">${cnt(RSC.ws)}</span></button>
+      <button type="button" data-k="sel" aria-pressed="${on('rsc','sel')}">심화 선정<span class="c">${cnt(RSC.sel)}</span></button>
+      <button type="button" data-k="adv" aria-pressed="${on('rsc','adv')}">멘토링·캠프 참여<span class="c">${cnt(RSC.adv)}</span></button></div>`;
   rsRender();
-  if(RS.open){ rsView('app'); $r('rs-q').focus(); }
+}
+/* 허브가 열리자마자 미리 받아 둡니다: 지난번 목록을 먼저 보여 주고(바로 뜸), 뒤에서 새로 받아 바뀐 것만 고칩니다 */
+function rsWarm(){
+  if(!ROSTER_API || !rsStore.key) return Promise.resolve();
+  if(RS.loading) return RS.loading;
+  if(!RS.list.length){ const c = rsStore.list; if(c && c.cols && c.rows) try{ rsFill(c); }catch(e){} }
+  rsStore.load();
+  const fresh = rsCall('list').then(d => { rsFill(d); rsStore.list = { cols:d.cols, rows:d.rows }; })
+    .catch(err => {
+      if(err.code === 'BAD_CODE' || !rsStore.key) hubLock('접속 코드가 바뀌었습니다. 새 코드를 넣어 주세요.');
+      else if(!RS.list.length && RS.open) rsGate(err.message);
+    }).finally(() => { RS.loading = null; });
+  RS.loading = RS.list.length ? Promise.resolve() : fresh;   // 지난번 목록이 있으면 기다리지 않습니다
+  return RS.loading;
 }
 function rsBadges(s){
   let h = '';
@@ -1168,7 +1185,8 @@ async function rsDetail(id){
       <div id="pp-rest"><div class="cts"><div class="sk"></div><div class="sk"></div></div></div></div>`;
   $r('rs-pov').classList.remove('hide'); $r('rs-pop').focus();
   try{
-    const d = await rsCall('detail', { id });
+    const d = RS.dcache.get(id) || await rsCall('detail', { id });
+    RS.dcache.set(id, d);
     if(RS.det !== s) return;
     const m = new Map(d.base.filter(([l, v]) => v !== '').map(([l, v]) => [l, String(v)]));
     const g = k => m.get(k) || '', ex = (d.extras || []).map(x => ({ title:x.title, items:x.items.map(([l, v]) => [l, String(v)]) }));
@@ -1214,12 +1232,12 @@ function rsHide(){
   $r('rs-ov').classList.add('hide'); $r('rs-fab').classList.remove('hide'); document.body.style.overflow = '';
   if(RS.back && RS.back.focus) RS.back.focus();
 }
-$r('rs-gate').addEventListener('submit', e => { e.preventDefault(); if(ROSTER_API) rsLoad(); });
+$r('rs-gate').addEventListener('submit', async e => { e.preventDefault(); if(!ROSTER_API) return; rsView('load'); await rsWarm(); if(RS.open && RS.list.length) rsView('app'); });
 
 /* ── 허브 들어오는 문: 코드는 명단 관문이 확인하고, 맞으면 이 브라우저에 저장해 다음부터는 묻지 않습니다 ── */
 const HTML = document.documentElement;
 function hubLock(msg){
-  rsStore.put(''); RS.token = ''; rsStore.save(); RS.list = []; $r('rs-list').innerHTML = ''; $r('rs-q').value = '';
+  rsStore.list = null; rsStore.put(''); RS.token = ''; rsStore.save(); RS.list = []; RS.sig = ''; RS.loading = null; RS.dcache.clear(); $r('rs-list').innerHTML = ''; $r('rs-q').value = '';
   rsHide(); try{ lockVault(); }catch(e){}
   HTML.classList.add('locked'); $r('hg-msg').textContent = msg || ''; $r('hg-code').value = ''; $r('hg-code').focus(); window.scrollTo(0, 0);
 }
@@ -1230,7 +1248,7 @@ $r('hg-form').addEventListener('submit', async e => {
   msg.textContent = '확인하는 중…'; go.disabled = true;
   try{
     await rsLogin(code, $r('hg-keep').checked);
-    msg.textContent = ''; $r('hg-code').value = ''; HTML.classList.remove('locked');
+    msg.textContent = ''; $r('hg-code').value = ''; HTML.classList.remove('locked'); rsWarm();
     show(location.hash.slice(1) || 'sites', false);
   }catch(err){ msg.textContent = err.code === 'BAD_CODE' ? '접속 코드가 맞지 않습니다.' : err.message; $r('hg-code').select(); }
   go.disabled = false;
@@ -1238,10 +1256,7 @@ $r('hg-form').addEventListener('submit', async e => {
 document.addEventListener('click', e => { if(e.target.closest('[data-hub-lock]')) hubLock('로그아웃했습니다.'); });
 if(!ROSTER_API) HTML.classList.remove('locked');          // 관문이 없으면 문을 세우지 않습니다
 else if(!rsStore.key) hubLock('');
-else {                                                       // 저장된 코드가 아직 맞는지 창을 열 때 한 번 조용히 확인
-  rsStore.load();
-  if(!RS.token) rsLogin(rsStore.key).catch(err => { if(err.code === 'BAD_CODE') hubLock('접속 코드가 바뀌었습니다. 새 코드를 넣어 주세요.'); });
-}
+else rsWarm();   // 저장된 코드로 목록을 미리 받아 둡니다(코드가 바뀌었으면 여기서 다시 잠김)
 $r('rs-q').addEventListener('input', rsRender);
 document.addEventListener('click', e => {
   if(e.target.closest('[data-rs-open]')){ rsShow(); return; }
