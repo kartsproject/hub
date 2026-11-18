@@ -1046,15 +1046,19 @@ async function rsPost(action, body){
   if(!j.ok){ const err = new Error(j.message || '요청을 처리하지 못했습니다.'); err.code = j.error; throw err; }
   return j.data;
 }
-/* 열람 시간이 끝났으면 기억해 둔 코드로 조용히 다시 엽니다 */
+/* 접속 확인이 필요하면 저장된 코드를 요청에 함께 실어 한 번에 처리합니다(관문 Ver.1.1부터). 예전 관문이면 따로 확인한 뒤 다시 요청합니다 */
 async function rsCall(action, body){
-  if(!RS.token && rsStore.key) await rsLogin(rsStore.key);
-  try{ return await rsPost(action, body); }
-  catch(err){
-    if(err.code !== 'EXPIRED' || !rsStore.key) throw err;
-    await rsLogin(rsStore.key);
-    return rsPost(action, body);
-  }
+  const withKey = () => rsPost(action, Object.assign({ code:rsStore.key, name:'운영진' }, body));
+  let sentKey = !RS.token && !!rsStore.key;
+  try{
+    try{ return await (sentKey ? withKey() : rsPost(action, body)); }
+    catch(err){
+      if(err.code !== 'EXPIRED' || !rsStore.key) throw err;
+      if(!sentKey){ sentKey = true; try{ return await withKey(); }catch(e2){ if(e2.code !== 'EXPIRED') throw e2; } }
+      await rsLogin(rsStore.key);
+      return await rsPost(action, body);
+    }
+  }catch(err){ if(err.code === 'BAD_CODE') rsStore.put(''); throw err; }
 }
 async function rsLogin(code, keep){   // keep을 주지 않으면(조용한 재확인) 저장 위치를 그대로 둡니다
   RS.token = '';
