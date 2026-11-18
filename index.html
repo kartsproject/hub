@@ -273,10 +273,9 @@ try{ if(!localStorage.getItem('hub-roster-key') && !sessionStorage.getItem('hub-
   .rs-top h2{font-size:21px;font-weight:800;letter-spacing:-.02em}
   .rs-top p{color:var(--band-soft);font-size:13.5px;margin-top:1px}
   .rs-top > div{min-width:0;flex:1}
-  .rs-top .x,.rs-top .bk{flex:none;height:38px;border-radius:10px;color:var(--band-soft);display:inline-grid;place-items:center}
+  .rs-top .x{flex:none;height:38px;border-radius:10px;color:var(--band-soft);display:inline-grid;place-items:center}
   .rs-top .x{width:38px;font-size:24px;line-height:1}
-  .rs-top .bk{padding:0 12px 0 8px;display:inline-flex;gap:4px;font-size:14px;font-weight:700;background:var(--band-2);color:var(--band-tx)}
-  .rs-top .x:hover,.rs-top .bk:hover{background:#3B3E44;color:#fff}
+  .rs-top .x:hover{background:#3B3E44;color:#fff}
   .rs-body{flex:1;overflow:auto;padding:20px 24px 28px;overscroll-behavior:contain}
   .rs-body .gate{margin:26px auto 0}
   .gate-note{font-size:13px!important;color:var(--faint)!important;margin-top:6px!important}
@@ -300,24 +299,89 @@ try{ if(!localStorage.getItem('hub-roster-key') && !sessionStorage.getItem('hub-
   .rs-foot{margin-top:22px;font-size:13px;color:var(--faint);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
   .rs-foot button{font-weight:700;color:var(--gray);text-decoration:underline;text-underline-offset:3px}
   .rs-foot button:hover{color:var(--ink)}
-  .rs-sec{margin-top:20px}
-  .rs-sec:first-child{margin-top:0}
-  .rs-sec h4{font-size:13px;font-weight:700;color:var(--gray);display:flex;align-items:center;gap:7px;margin-bottom:8px}
-  .rs-sec h4::before{content:"";width:14px;height:3px;border-radius:2px;background:var(--yel)}
-  .kv{display:grid;grid-template-columns:128px minmax(0,1fr);border:1px solid var(--line);border-radius:12px;overflow:hidden}
-  .kv dt,.kv dd{padding:10px 14px;border-top:1px solid var(--line-2);font-size:14.5px}
-  .kv dt:first-of-type,.kv dt:first-of-type + dd{border-top:0}
-  .kv dt{background:var(--desk);color:var(--gray);font-weight:600;font-size:13.5px}
-  .kv dd{display:flex;align-items:center;gap:8px;flex-wrap:wrap;white-space:pre-line}
-  .kv dd .v{min-width:0;overflow-wrap:anywhere}
-  .kv dd .cbtn{border-color:var(--line);height:26px;display:inline-flex;align-items:center}
-  .rs-warn{margin-bottom:20px;background:var(--yel-lt);color:var(--yel-ink);border-radius:12px;padding:12px 14px;font-size:14px;font-weight:500}
-  .rs-warn b{display:block;font-size:13px;margin-bottom:2px}
+  /* 학생 정보 팝업 */
+  .rs-pov{position:fixed;inset:0;z-index:45;background:rgba(20,22,26,.55);display:grid;grid-template-columns:minmax(0,1fr);place-items:center;padding:16px}
+  .rs-pop{width:100%;max-width:560px;max-height:min(90vh,860px);display:flex;flex-direction:column;background:var(--paper);border-radius:20px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.4);animation:enter .18s ease-out}
+  .pp-h{flex:none;position:relative;padding:22px 60px 18px 24px;background:color-mix(in srgb,var(--c) 10%,#fff);border-top:6px solid var(--c)}
+  .pp-h .who{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .pp-h h3{font-size:26px;font-weight:800;letter-spacing:-.02em}
+  .pp-h .mj{font-size:15px;font-weight:700;color:color-mix(in srgb,var(--c) 70%,#000)}
+  .pp-h .sub{color:var(--ink-2);font-size:14.5px;margin-top:4px;font-weight:500}
+  .pp-h .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;min-height:24px}
+  .pp-h .chip{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:999px;background:rgba(255,255,255,.75);border:1px solid rgba(0,0,0,.07);font-size:12.5px;font-weight:600;color:var(--ink-2)}
+  .pp-h .x{position:absolute;right:14px;top:16px;width:38px;height:38px;border-radius:10px;color:var(--gray);font-size:24px;line-height:1}
+  .pp-h .x:hover{background:rgba(0,0,0,.07);color:var(--ink)}
+  .pp-b{padding:20px 24px 24px;overflow:auto;overscroll-behavior:contain}
+  .pp-l{font-size:12.5px;font-weight:700;color:var(--gray);margin:0 0 10px;display:flex;align-items:center;gap:7px}
+  .pp-l::before{content:"";width:14px;height:3px;border-radius:2px;background:var(--yel)}
+  /* 과정 참여 흐름 */
+  .flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));position:relative}
+  .fs{position:relative;text-align:center;padding:0 2px}
+  .fs::before{content:"";position:absolute;top:17px;right:50%;width:100%;height:3px;background:var(--line);z-index:0}
+  .fs:first-child::before{display:none}
+  .fs.ok::before{background:#58A861}
+  .fs .d{position:relative;z-index:1;width:36px;height:36px;border-radius:50%;margin:0 auto;display:grid;place-items:center;background:#fff;border:3px solid var(--line);color:var(--faint)}
+  .fs.ok .d{background:#58A861;border-color:#58A861;color:#fff}
+  .fs.no .d{background:#FBE9E5;border-color:#E2907F;color:#B4442E}
+  .fs .t{display:block;font-size:13px;font-weight:700;margin-top:8px;color:var(--ink)}
+  .fs .v{display:block;font-size:12.5px;font-weight:600;margin-top:1px;color:var(--faint)}
+  .fs.ok .v{color:#2F6B35}.fs.no .v{color:#B4442E}
+  .fs.na .t{color:var(--faint)}
+  .flow-n{margin-top:12px;padding:9px 12px;border-radius:10px;background:#FBE9E5;color:#8E3423;font-size:13.5px;font-weight:500}
+  /* 연락처 카드 */
+  .cts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:22px}
+  .ct{border:1px solid var(--line);border-radius:14px;padding:14px 14px 12px;min-width:0}
+  .ct h5{font-size:12.5px;font-weight:700;color:var(--gray);display:flex;align-items:center;gap:6px;margin-bottom:6px}
+  .ct h5 b{color:var(--ink);font-size:14px}
+  .ct .ph{font-size:18px;font-weight:800;letter-spacing:.01em;font-variant-numeric:tabular-nums}
+  .ct .em{font-size:13px;color:var(--gray);overflow-wrap:anywhere;margin-top:1px;min-height:19px}
+  .ct .acts{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+  .ct .acts .cbtn{height:30px;padding:0 11px;border-color:var(--line);display:inline-flex;align-items:center;gap:5px;font-size:12.5px}
+  .ct .acts .cbtn.pri{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .ct .acts .cbtn svg{width:13px;height:13px}
+  .ct .none{color:var(--faint);font-size:14px;font-weight:600}
+  .sk{height:92px;border-radius:14px;background:linear-gradient(90deg,var(--line-2),#FAF9F5,var(--line-2));background-size:200% 100%;animation:sk 1.1s linear infinite}
+  @keyframes sk{to{background-position:-200% 0}}
+  .rs-warn{margin-top:14px;background:var(--yel-lt);color:var(--yel-ink);border-radius:12px;padding:10px 14px;font-size:13.5px;font-weight:500}
+  .rs-warn b{margin-right:6px}
+  /* 더 보기 버튼과 펼침 */
+  .more{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px;padding-top:18px;border-top:1px dashed #D8D5CC}
+  .more button{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 13px 0 15px;border-radius:999px;border:1px solid var(--line);font-size:14px;font-weight:700;color:var(--ink-2);transition:background .15s,border-color .15s}
+  .more button:hover{border-color:var(--ink)}
+  .more button svg{color:var(--faint);transition:transform .15s}
+  .more button[aria-expanded="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+  .more button[aria-expanded="true"] svg{transform:rotate(90deg);color:var(--yel)}
+  .pane{margin-top:14px;padding:16px;border-radius:14px;background:var(--desk)}
+  .tiles2{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:8px}
+  .tl{background:#fff;border-radius:10px;padding:9px 12px;min-width:0}
+  .tl span{display:block;font-size:12px;font-weight:600;color:var(--gray)}
+  .tl b{display:block;font-size:14.5px;font-weight:700;margin-top:1px;overflow-wrap:anywhere}
+  .lines{margin-top:8px;background:#fff;border-radius:10px;padding:2px 12px}
+  .tiles2:empty + .lines,.lines:first-child{margin-top:0}
+  .ln{padding:9px 0;border-top:1px solid var(--line-2);font-size:14px}
+  .ln:first-child{border-top:0}
+  .ln span{display:block;font-size:12px;font-weight:600;color:var(--gray)}
+  .ln p{margin-top:1px;white-space:pre-line;overflow-wrap:anywhere}
+  .tk{display:grid;grid-template-columns:auto minmax(0,1fr);gap:0;background:#fff;border-radius:12px;overflow:hidden;margin-bottom:8px}
+  .tk .l{padding:12px 16px;background:var(--ink);color:#fff;text-align:center;display:flex;flex-direction:column;justify-content:center;min-width:92px}
+  .tk .l b{font-size:19px;font-weight:800;color:var(--yel)}
+  .tk .l span{font-size:12.5px;color:var(--band-soft);margin-top:1px}
+  .tk .r{padding:11px 14px;min-width:0}
+  .tk .r b{display:block;font-size:16px;font-weight:800}
+  .tk .r p{font-size:13px;color:var(--gray);margin-top:2px}
+  .tk .r .badge{margin-top:6px;margin-right:4px}
+  @media (max-width:640px){
+    .rs-pov{padding:0;place-items:end center}
+    .rs-pop{max-width:none;max-height:92vh;border-radius:20px 20px 0 0}
+    .pp-h{padding:18px 54px 14px 18px}.pp-h h3{font-size:23px}
+    .pp-b{padding:16px 16px 22px}
+    .cts{grid-template-columns:minmax(0,1fr)}
+    .fs .t{font-size:12px}.fs .v{font-size:11.5px}
+  }
   @media (max-width:640px){
     .band-r{width:100%}.rs-btn{flex:1;justify-content:center;height:46px;padding:0 14px}.rs-btn kbd{display:none}
     .rs-fab{right:14px;bottom:14px;height:50px;padding:0 18px 0 15px}
     .rs-body{padding:16px 16px 24px}.rs-top{padding:14px 10px 12px 16px}
-    .kv{grid-template-columns:104px minmax(0,1fr)}
     .rs-i .st{grid-area:auto;grid-column:1/3;justify-content:flex-start;padding-left:18px;margin-top:4px}
     .rs-i{grid-template-areas:"n n a" "s s a"}
   }
@@ -436,10 +500,10 @@ try{ if(!localStorage.getItem('hub-roster-key') && !sessionStorage.getItem('hub-
         <div class="empty hide" id="rs-none"><b>찾는 학생이 없습니다</b>검색어나 분야·과정 선택을 바꿔 보세요.</div>
         <p class="rs-foot"><span>접속 코드를 넣은 기기에서만 열립니다.</span><button type="button" data-hub-lock>로그아웃</button></p>
       </div>
-      <div class="hide" id="rs-det"></div>
     </div>
   </aside>
 </div>
+<div class="rs-pov hide" id="rs-pov"><div class="rs-pop" id="rs-pop" role="dialog" aria-modal="true" aria-labelledby="rs-pn" tabindex="-1"></div></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -622,7 +686,9 @@ const IC = {
   down:  '<path d="M12 4v11M7 11l5 5 5-5M5 20h14"/>',
   search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
   next:  '<path d="m9 6 6 6-6 6"/>',
-  back:  '<path d="m15 6-6 6 6 6"/>',
+  phone: '<path d="M6.6 3h3l1.4 4-2 1.6a12 12 0 0 0 6.4 6.4l1.6-2 4 1.4v3a2 2 0 0 1-2.2 2A17 17 0 0 1 4.6 5.2 2 2 0 0 1 6.6 3z"/>',
+  mail:  '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/>',
+  xmark: '<path d="M6 6l12 12M18 6 6 18"/>',
   people:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.4 3.2-5.5 6.5-5.5s5.9 2.1 6.5 5.5"/><path d="M16 4.8a3.5 3.5 0 0 1 0 6.4M18.5 14.9c1.6.9 2.7 2.6 3 5.1"/>',
 };
 const badge = (t, label) => { const [c,n] = TAG[t] || TAG.open; return `<span class="badge bg-${c}">${esc(label || n)}</span>`; };
@@ -992,18 +1058,12 @@ async function rsLogin(code, keep){   // keep을 주지 않으면(조용한 재�
   try{ await rsPost('login', { name:'운영진', code }); if(keep !== undefined) rsStore.put(code, keep); }
   catch(err){ if(err.code === 'BAD_CODE') rsStore.put(''); throw err; }
 }
-function rsView(v){   // gate | load | app | det
-  ['gate','load','app','det'].forEach(k => $r('rs-' + k).classList.toggle('hide', k !== v));
-  const s = v === 'det' && RS.det;
-  $r('rs-top').style.setProperty('--c', s ? COLOR[FKEY[s['분야']] || 'all'] : 'var(--yel)');
-  $r('rs-top').innerHTML = s
-    ? `<button class="bk" type="button" id="rs-back" aria-label="목록으로">${svg(IC.back, 18, 2.4)}목록</button>
-       <div><h2 id="rs-ttl">${esc(s['성명'])}</h2><p>${esc([s['분야'] + ' ' + s['전공'], s['학교명'], gradeTx(s)].filter(Boolean).join(' · '))}</p></div>
-       <button class="x" type="button" data-rs-close aria-label="닫기">×</button>`
-    : `<span class="ic">${svg(IC.people, 21, 2)}</span>
-       <div><h2 id="rs-ttl">참가자 검색</h2><p>이름을 누르면 연락처·보호자·과정별 정보가 열립니다.</p></div>
-       <button class="x" type="button" data-rs-close aria-label="닫기">×</button>`;
+function rsView(v){   // gate | load | app
+  ['gate','load','app'].forEach(k => $r('rs-' + k).classList.toggle('hide', k !== v));
 }
+$r('rs-top').innerHTML = `<span class="ic">${svg(IC.people, 21, 2)}</span>
+  <div><h2 id="rs-ttl">참가자 검색</h2><p>이름을 누르면 학생 정보가 팝업으로 열립니다.</p></div>
+  <button class="x" type="button" data-rs-close aria-label="닫기">×</button>`;
 async function rsShow(){
   if(RS.open) return;
   RS.open = true; RS.back = document.activeElement;
@@ -1052,45 +1112,105 @@ function rsRender(){
   $r('rs-none').classList.toggle('hide', out.length > 0);
   $r('rs-count').innerHTML = `<b>${out.length}명</b> / 전체 ${RS.list.length}명`;
 }
-const RS_SEC = [
-  ['기본 정보', ['생년월일', '성별', '학교급', '학교명', '학년', '지역', '주소']],
-  ['연락처', ['학생 연락처', '학생 이메일', '보호자 성명', '관계', '보호자 연락처', '보호자 이메일']],
-  ['과정 참여', ['워크숍 참가', '심화과정 선정', '심화과정 참여', '불참 사유·경위']],
-];
-function rsVal(label, v){
-  const tel = /연락처/.test(label) && /^[+0-9][0-9\- ]{7,}$/.test(v), mail = /이메일/.test(label) && /@/.test(v);
-  return `<span class="v">${esc(v)}</span>`
-    + (tel ? `<a class="cbtn" href="tel:${esc(v.replace(/[^+0-9]/g,''))}">전화</a>` : '')
-    + (mail ? `<a class="cbtn" href="mailto:${esc(v)}">메일</a>` : '')
-    + (tel || mail ? `<button class="cbtn" type="button" data-copy="${esc(v)}" data-what="${tel ? 'tel' : 'mail'}">복사</button>` : '');
+/* ── 학생 정보 팝업: 과정 흐름 + 연락처만 먼저 보여 주고, 나머지는 버튼을 눌러 펼칩니다 ── */
+function rsFlow(s, camp, note){
+  const ws = s['워크숍 참가'], sel = s['심화과정 선정'], adv = s['심화과정 참여'];
+  const steps = [
+    ['워크숍', ws === '참가' ? 'ok' : ws === '불참' ? 'no' : 'na', ws || '—'],
+    ['심화과정 선정', sel === '선정' ? 'ok' : ws === '불참' ? 'na' : 'no', sel === '선정' ? '선정' : ws === '불참' ? '—' : '미선정'],
+    ['심화 멘토링', adv === '참여' ? 'ok' : adv === '불참' ? 'no' : 'na', adv || '—'],
+    ['겨울캠프', camp ? 'ok' : 'na', camp ? '대상' : '—'],
+  ];
+  return `<p class="pp-l">과정 참여</p><div class="flow" role="list">${steps.map(([t, k, v]) =>
+    `<div class="fs ${k}" role="listitem"><span class="d">${k === 'ok' ? svg(IC.check, 18, 3) : k === 'no' ? svg(IC.xmark, 16, 3) : ''}</span><span class="t">${t}</span><span class="v">${esc(v)}</span></div>`).join('')}</div>`
+    + (note ? `<p class="flow-n">${esc(note)}</p>` : '');
 }
-const rsKv = (title, items) => items.length ? `<section class="rs-sec"><h4>${esc(title)}</h4><dl class="kv">${items.map(([l,v]) => `<dt>${esc(l)}</dt><dd>${rsVal(l, String(v))}</dd>`).join('')}</dl></section>` : '';
+function rsContact(title, name, phone, mail){
+  const tel = phone && /^[+0-9][0-9\- ]{7,}$/.test(phone);
+  return `<div class="ct"><h5>${esc(title)}${name ? `<b>${esc(name)}</b>` : ''}</h5>
+    ${phone ? `<div class="ph">${esc(phone)}</div>` : '<div class="none">연락처 없음</div>'}
+    <div class="em">${esc(mail || '')}</div>
+    <div class="acts">${tel ? `<a class="cbtn pri" href="tel:${esc(phone.replace(/[^+0-9]/g, ''))}">${svg(IC.phone, 13, 2.2)}전화</a><button class="cbtn" type="button" data-copy="${esc(phone)}" data-what="tel">${svg(IC.copy, 13, 2.2)}복사</button>` : ''}
+      ${mail ? `<a class="cbtn" href="mailto:${esc(mail)}">${svg(IC.mail, 13, 2.2)}메일</a>` : ''}</div></div>`;
+}
+/* 짧은 값은 타일로, 긴 값은 줄로 */
+function rsPane(items){
+  const short = items.filter(([l, v]) => v.length <= 18 && !v.includes('\n')), long = items.filter(x => !short.includes(x));
+  return (short.length ? `<div class="tiles2">${short.map(([l, v]) => `<div class="tl"><span>${esc(l)}</span><b>${esc(v)}</b></div>`).join('')}</div>` : '')
+    + (long.length ? `<div class="lines">${long.map(([l, v]) => `<div class="ln"><span>${esc(l)}</span><p>${esc(v)}</p></div>`).join('')}</div>` : '');
+}
+function rsMentoring(items){   // 무용 1:1 멘토링 일정·음악 실내악 편성은 표 대신 카드로
+  const m = new Map(items), take = k => { const v = m.get(k) || ''; m.delete(k); return v; };
+  let h = '';
+  if(m.has('멘토링 회차')){
+    const rd = take('멘토링 회차'), date = take('일자'), time = take('멘토링 시간'), wait = take('대기실 접속'), mentor = take('멘토'), order = take('순서'), state = take('진행 상태'), reply = take('참석 회신');
+    h += `<div class="tk"><div class="l"><b>${esc(/^\d+$/.test(rd) ? rd + '회차' : rd)}</b><span>${esc(date || '일자 미정')}</span></div>
+      <div class="r"><b>${esc(time || '시간 미정')}</b><p>${esc([mentor && '멘토 ' + mentor, order && order + '번째', wait && '대기실 ' + wait].filter(Boolean).join(' · '))}</p>
+      ${state ? `<span class="badge ${state === '완료' ? 'bg-yes' : 'bg-open'}">${esc(state)}</span>` : ''}${reply ? `<span class="badge bg-open">회신 ${esc(reply)}</span>` : ''}</div></div>`;
+  }
+  if(m.has('실내악 편성(안)')){
+    const col = k => take(k).split('\n'), team = col('실내악 편성(안)'), mate = col('함께하는 학생'), piece = col('실내악 선정곡'), slot = col('10/18 연습 시간');
+    h += team.map((t, i) => { const [no, ...rest] = t.split(' '); return `<div class="tk"><div class="l"><b>${esc(no)}</b><span>${esc(slot[i] || '')}</span></div>
+      <div class="r"><b>${esc(rest.join(' '))}</b><p>${esc(piece[i] || '')}</p>${mate[i] ? `<span class="badge bg-open">함께 ${esc(mate[i])}</span>` : ''}</div></div>`; }).join('');
+  }
+  return h + rsPane([...m]);
+}
 async function rsDetail(id){
   const s = RS.list.find(x => x['접수번호'] === id); if(!s) return;
-  RS.top = $r('rs-body').scrollTop; RS.det = s;
-  $r('rs-det').innerHTML = '<div class="empty">불러오는 중…</div>';
-  rsView('det'); $r('rs-body').scrollTop = 0; $r('rs-back').focus();
+  RS.det = s; RS.pback = document.activeElement;
+  const c = COLOR[FKEY[s['분야']] || 'all'];
+  $r('rs-pop').style.setProperty('--c', c);
+  $r('rs-pop').innerHTML = `<div class="pp-h"><div class="who"><h3 id="rs-pn">${esc(s['성명'])}</h3><span class="mj">${esc(s['분야'] + ' · ' + s['전공'])}</span></div>
+      <p class="sub">${esc([s['학교명'], gradeTx(s)].filter(Boolean).join(' '))}</p>
+      <div class="chips" id="pp-chips">${[s['성별'], s['지역']].filter(Boolean).map(x => `<span class="chip">${esc(x)}</span>`).join('')}</div>
+      <button class="x" type="button" data-rs-pclose aria-label="닫기">×</button></div>
+    <div class="pp-b"><div id="pp-flow">${rsFlow(s, s['심화과정 참여'] === '참여', '')}</div>
+      <div id="pp-rest"><div class="cts"><div class="sk"></div><div class="sk"></div></div></div></div>`;
+  $r('rs-pov').classList.remove('hide'); $r('rs-pop').focus();
   try{
     const d = await rsCall('detail', { id });
     if(RS.det !== s) return;
-    const m = new Map(d.base.filter(([l,v]) => v !== ''));
-    const used = new Set(['분야', '전공', '성명', '확인 필요']);
-    const pick = keys => keys.filter(k => m.has(k)).map(k => { used.add(k); return [k, m.get(k)]; });
-    let h = m.has('확인 필요') ? `<div class="rs-warn"><b>확인 필요</b>${esc(m.get('확인 필요'))}</div>` : '';
-    h += RS_SEC.map(([t, keys]) => rsKv(t, pick(keys))).join('');
-    h += (d.extras || []).map(g => rsKv(g.title, g.items)).join('');
-    h += rsKv('접수 정보', [...m].filter(([l]) => !used.has(l)));
-    $r('rs-det').innerHTML = h;
+    const m = new Map(d.base.filter(([l, v]) => v !== '').map(([l, v]) => [l, String(v)]));
+    const g = k => m.get(k) || '', ex = (d.extras || []).map(x => ({ title:x.title, items:x.items.map(([l, v]) => [l, String(v)]) }));
+    const campG = ex.find(x => x.title === '겨울캠프'), camp = campG ? campG.items.some(([l, v]) => /^대상\(/.test(v) || v === '대상') : s['심화과정 참여'] === '참여';
+    $r('pp-chips').innerHTML = [g('성별'), g('생년월일') && g('생년월일') + ' 출생', g('지역')].filter(Boolean).map(x => `<span class="chip">${esc(x)}</span>`).join('');
+    $r('pp-flow').innerHTML = rsFlow(s, camp, g('불참 사유·경위'));
+    // 버튼으로 펼치는 정보
+    const SHOWN = new Set(['분야', '전공', '성명', '성별', '생년월일', '학교급', '학교명', '학년', '지역', '학생 연락처', '학생 이메일', '보호자 성명', '관계', '보호자 연락처', '보호자 이메일',
+      '워크숍 참가', '심화과정 선정', '심화과정 참여', '불참 사유·경위', '확인 필요']);
+    const panes = [];
+    ex.filter(x => x.title !== '겨울캠프').forEach(x => {
+      const kind = x.title.replace(s['분야'], '').trim();
+      const label = ({ '심화멘토링':'멘토링 정보', '워크숍':'워크숍 정보', '융합창작':'융합창작 신청' })[kind] || kind;
+      panes.push([label, kind === '심화멘토링' ? rsMentoring(x.items) : rsPane(x.items)]);
+    });
+    panes.sort((a, b) => (a[0] === '멘토링 정보' ? -1 : 0) - (b[0] === '멘토링 정보' ? -1 : 0));
+    const etc = [...m].filter(([l]) => !SHOWN.has(l));
+    if(etc.length) panes.push(['주소·접수 정보', rsPane(etc)]);
+    RS.panes = panes;
+    $r('pp-rest').innerHTML = `<div class="cts">${rsContact('학생', '', g('학생 연락처'), g('학생 이메일'))}${rsContact('보호자', [g('보호자 성명'), g('관계') && '(' + g('관계') + ')'].filter(Boolean).join(' '), g('보호자 연락처'), g('보호자 이메일'))}</div>`
+      + (m.has('확인 필요') ? `<p class="rs-warn"><b>확인 필요</b>${esc(g('확인 필요'))}</p>` : '')
+      + (panes.length ? `<div class="more">${panes.map(([t], i) => `<button type="button" data-pane="${i}" aria-expanded="false">${esc(t)}${svg(IC.next, 14, 2.4)}</button>`).join('')}</div><div id="pp-pane"></div>` : '');
   }catch(err){
     if(RS.det !== s) return;
     if(err.code === 'BAD_CODE' || !rsStore.key){ hubLock('접속 코드가 바뀌었습니다. 새 코드를 넣어 주세요.'); return; }
-    $r('rs-det').innerHTML = `<div class="empty"><b>정보를 불러오지 못했습니다</b>${esc(err.message)}</div>`;
+    $r('pp-rest').innerHTML = `<div class="empty"><b>정보를 불러오지 못했습니다</b>${esc(err.message)}</div>`;
   }
 }
-function rsBack(){ RS.det = null; $r('rs-det').innerHTML = ''; rsView('app'); $r('rs-body').scrollTop = RS.top; $r('rs-q').focus(); }
+function rsPaneToggle(btn){
+  const on = btn.getAttribute('aria-expanded') !== 'true';
+  $r('rs-pop').querySelectorAll('[data-pane]').forEach(b => b.setAttribute('aria-expanded', b === btn && on));
+  $r('pp-pane').innerHTML = on ? `<div class="pane">${RS.panes[+btn.dataset.pane][1]}</div>` : '';
+  if(on) $r('pp-pane').scrollIntoView({ block:'nearest', behavior:'smooth' });
+}
+function rsPopClose(){
+  if(!RS.det) return;
+  RS.det = null; $r('rs-pov').classList.add('hide'); $r('rs-pop').innerHTML = '';
+  if(RS.pback && RS.pback.focus) RS.pback.focus();
+}
 function rsHide(){
   if(!RS.open) return;
-  RS.open = false; RS.det = null; $r('rs-det').innerHTML = '';
+  rsPopClose(); RS.open = false;
   $r('rs-ov').classList.add('hide'); $r('rs-fab').classList.remove('hide'); document.body.style.overflow = '';
   if(RS.back && RS.back.focus) RS.back.focus();
 }
@@ -1126,12 +1246,13 @@ $r('rs-q').addEventListener('input', rsRender);
 document.addEventListener('click', e => {
   if(e.target.closest('[data-rs-open]')){ rsShow(); return; }
   const b = e.target.closest('[data-rs]'); if(b){ rsDetail(b.dataset.rs); return; }
-  if(e.target.closest('#rs-back')){ rsBack(); return; }
+  const pb = e.target.closest('[data-pane]'); if(pb){ rsPaneToggle(pb); return; }
+  if(e.target.closest('[data-rs-pclose]') || e.target === $r('rs-pov')){ rsPopClose(); return; }
   if(e.target.closest('[data-rs-close]') || e.target === $r('rs-ov')) rsHide();
 });
 document.addEventListener('keydown', e => {
   if((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 'k'){ e.preventDefault(); RS.open ? rsHide() : rsShow(); return; }
-  if(e.key === 'Escape' && RS.open){ e.stopPropagation(); RS.det ? rsBack() : rsHide(); }
+  if(e.key === 'Escape' && RS.open){ e.stopPropagation(); RS.det ? rsPopClose() : rsHide(); }
 });
 if(location.hash === '#roster' && !HTML.classList.contains('locked')) rsShow();
 
